@@ -1,15 +1,54 @@
-دKryptonROM Engine
+# ⚡ KryptonROM Engine
 
-KryptonROM Engine is a Samsung One UI ROM engine focused on experimenting with different One UI versions, device bases, custom libraries, and system optimizations.
+> « A flexible Samsung One UI ROM Engine focused on custom bases, system modifications, performance, and experimentation. »
 
-The Engine supports working with multiple One UI generations, including One UI 4, 5, 6, 7, 8, and 8.5, using different device bases depending on the build and requirements.
+---
 
-Available bases can include devices such as the Galaxy S21 FE, S23 FE, A73, S26 FE, and other compatible Samsung devices. A specific One UI version is not tied to a single base; different bases can be used, combined, or adapted depending on the project.
+## 📱 One UI Support
 
-KryptonROM also focuses on custom libraries, performance optimizations, battery improvements, and system-level modifications, including experiments with running older One UI system components on newer firmware binaries.
+Supported One UI Versions:
+* **One UI 4**
+* **One UI 5**
+* **One UI 6**
+* **One UI 7**
+* **One UI 8**
+* **One UI 8.5**
 
-The Engine is mainly built around flexibility: choosing the right base, components, and optimizations for each device instead of following a fixed base-to-version setup.
+> 💡 **Note:** **KryptonROM** is *not* locked to one specific base per One UI version. We work with different Samsung bases depending on the device target and the goal of each build.
 
-Third-party features or implementations are credited to their original developers when used.
+---
 
-KryptonROM Engine — Flexible One UI bases, custom components, and experimentation.
+## 🧩 Example Bases
+
+We utilize and port multiple compatible Samsung device bases, including:
+
+* **Galaxy S21 FE**
+* **Galaxy S23 FE**
+* **Galaxy A73**
+* **Galaxy S26 FE**
+* **Stock Samsung Base Firmware**
+* *And other cross-compatible bases...*
+
+---
+
+## 🛠️ What We Do
+
+- 🔄 **Adapt** different One UI generations seamlessly across devices.
+- 🧩 **Combine & Modify** system structures from different device bases.
+- ⚙️ **Build & Patch** custom system binaries and framework libraries (`services.jar`, `ssrm.jar`, etc.).
+- 🚀 **Boost Performance** and maximize overall system responsiveness.
+- 🔋 **Optimize Power** consumption and refine battery profiles.
+- 🔬 **Experiment** with cross-generation system components and features.
+- 🧪 **Test** various framework and base image combinations for peak stability.
+
+---
+
+## 💡 Experimental Concepts
+
+**KryptonROM** continuously tests and implements concepts such as:
+
+```text
+• One UI 5 System  ➔  Newer Firmware Binary Integration
+• S21 FE Base       ➔  Ported & Adapted to Target Devices
+• A73 Base          ➔  Custom Optimized One UI Build
+• Custom Libraries  ➔  Enhanced System Performance & Stability
