@@ -1,4 +1,6 @@
-# ⚡ KryptonROM Engine
+![KryptonROM Engine Logo](QuantumROM/logo/file_0000000013f88210ad67241888286452.png)
+
+# ⚡ KryptonROM Engine 
 
 > « A flexible Samsung One UI ROM Engine focused on custom bases, system modifications, performance, and experimentation. »
 
