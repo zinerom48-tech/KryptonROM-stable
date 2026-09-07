@@ -27,7 +27,7 @@ We utilize and port multiple compatible Samsung device bases, including:
 * **Galaxy S21 FE**
 * **Galaxy S23 FE**
 * **Galaxy A73**
-* **Galaxy S26 FE**
+* **Galaxy S23 Ultra**
 * **Stock Samsung Base Firmware**
 * *And other cross-compatible bases...*
 
