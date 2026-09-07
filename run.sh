@@ -5,7 +5,7 @@ if [ "$#" -lt 4 ]; then
     exit 1
 fi
 
-VERSION="1"
+VERSION="1.2.2"
 
 # Device info
 export STOCK_DEVICE="$1"
@@ -36,7 +36,7 @@ if [ "$STOCK_DEVICE" != "None" ]; then
         exit 1
     fi
 
-	echo "✅ Device supported: $STOCK_DEVICE"
+    echo "✅ Device supported: $STOCK_DEVICE"
     GIT_SPARSE_DOWNLOAD "SN-Abdullah-Al-Noman/QuantumROM" "Devices" "$STOCK_DEVICE" \
         "$(pwd)/QuantumROM/Devices/$STOCK_DEVICE"
 else
@@ -71,9 +71,10 @@ mv -f "$WORK_DIR"/*.jar "$FIRM_DIR/$TARGET_DEVICE/system/system/framework/"
 
 PATCH_BT_LIB "$FIRM_DIR/$TARGET_DEVICE" "$WORK_DIR"
 
-B_ID="$(grep -m1 '^ro.system.build.id=' "$FIRM_DIR/$TARGET_DEVICE/system/system/build.prop" | cut -d= -f2 | tr -d '\r')"
-B_V="$(grep -m1 '^ro.system.build.version.incremental=' "$FIRM_DIR/$TARGET_DEVICE/system/system/build.prop" | cut -d= -f2 | tr -d '\r')"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: Built with Quantum Tools"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: Built with Quantum Tools"
+# Updated Build Display ID
+BUILD_DISPLAY_NAME="KryptonROM V${VERSION} (S21 FE base)"
+
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "$BUILD_DISPLAY_NAME"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "$BUILD_DISPLAY_NAME"
 
 BUILD_IMG "$FIRM_DIR/$TARGET_DEVICE" "all" "$OUTPUT_FILESYSTEM" "$OUT_DIR"
