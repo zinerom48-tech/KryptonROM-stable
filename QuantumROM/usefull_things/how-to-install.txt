@@ -1,0 +1,32 @@
+How to Flash Krypton ROM
+
+Krypton uses three main system images:
+
+- "system.img"
+- "product.img"
+- "system_ext.img"
+
+Using TWRP
+
+1. Boot into TWRP Recovery.
+2. Flash the following system images to their corresponding partitions:
+   - "system.img" → System
+   - "product.img" → Product
+   - "system_ext.img" → System Ext
+3. Flash your root package if required.
+4. Wipe Data/Cache if required by the ROM.
+5. Reboot to System.
+
+Using Fastboot / Fastbootd
+
+Boot into fastbootd and flash the images to their corresponding partitions:
+
+fastboot flash system system.img
+fastboot flash product product.img
+fastboot flash system_ext system_ext.img
+
+After flashing, reboot:
+
+fastboot reboot
+
+«Note: Partition names and flashing requirements can vary between devices. Always follow the instructions provided for your specific Krypton build.»
