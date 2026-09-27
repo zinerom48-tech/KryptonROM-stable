@@ -14,10 +14,16 @@ on:
         type: boolean
         default: true
 
-      TARGET_DEVICE:
-        description: "Target device model (Base)"
+      STOCK_DEVICE:
+        description: "Your stock device model"
         required: true
-        default: "SM-G990B"
+        type: choice
+        options:
+          - A52s5G
+          - SM-X216B
+          - SM-A528B
+          - None
+        default: "A52s5G"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
         description: "Input target device CSC code or direct SamFW download link"
