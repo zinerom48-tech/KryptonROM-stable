@@ -5,7 +5,7 @@ if [ "$#" -lt 4 ]; then
     exit 1
 fi
 
-VERSION="1.2.2"
+VERSION="1.2.7"
 
 # Device info
 export STOCK_DEVICE="$1"
@@ -26,19 +26,13 @@ source "$(pwd)/scripts/debloat.sh"
 source "$(pwd)/scripts/git_utils.sh"
 source "$(pwd)/scripts/QuantumRom.sh"
 
-REPO="SN-Abdullah-Al-Noman/QuantumROM"
-BRANCH="Devices"
-
+# فحص الدعم محلياً لتفادي خطأ 404
 if [ "$STOCK_DEVICE" != "None" ]; then
-    if ! curl -fsSL -H "Accept: application/vnd.github+json" \
-        "https://api.github.com/repos/$REPO/contents/$STOCK_DEVICE?ref=$BRANCH" >/dev/null; then
-        echo "❌ Unsupported: Device '$STOCK_DEVICE' not found in $REPO/$BRANCH"
+    if [ ! -d "$DEVICES_DIR/$STOCK_DEVICE" ]; then
+        echo "❌ Unsupported: Device '$STOCK_DEVICE' not found in $DEVICES_DIR"
         exit 1
     fi
-
-    echo "✅ Device supported: $STOCK_DEVICE"
-    GIT_SPARSE_DOWNLOAD "SN-Abdullah-Al-Noman/QuantumROM" "Devices" "$STOCK_DEVICE" \
-        "$(pwd)/QuantumROM/Devices/$STOCK_DEVICE"
+    echo "✅ Device supported locally: $STOCK_DEVICE"
 else
     echo "ℹ️ STOCK_DEVICE is set to None."
 fi
@@ -71,8 +65,8 @@ mv -f "$WORK_DIR"/*.jar "$FIRM_DIR/$TARGET_DEVICE/system/system/framework/"
 
 PATCH_BT_LIB "$FIRM_DIR/$TARGET_DEVICE" "$WORK_DIR"
 
-# Updated Build Display ID
-BUILD_DISPLAY_NAME="KryptonROM V${VERSION} (S21 FE base)"
+# ضبط الـ Build Display ID مظبوط وبدون لخبطة
+BUILD_DISPLAY_NAME="KryptonROM V${VERSION} ${TARGET_DEVICE} base"
 
 BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "$BUILD_DISPLAY_NAME"
 BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "$BUILD_DISPLAY_NAME"
