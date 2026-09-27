@@ -6,7 +6,7 @@ on:
       STOCK_DEVICE:
         description: "Your stock device model"
         required: true
-        default: "SM-A528B"
+        default: "A52s5G"
 
       USE_UI_8_TETHERING_APEX:
         description: "Set True if your kernel BPF version is 5.4 (lower than 5.10)"
