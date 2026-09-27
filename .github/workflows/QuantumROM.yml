@@ -6,6 +6,12 @@ on:
       STOCK_DEVICE:
         description: "Your stock device model"
         required: true
+        type: choice
+        options:
+          - A52s5G
+          - SM-X216B
+          - SM-A528B
+          - None
         default: "A52s5G"
 
       USE_UI_8_TETHERING_APEX:
@@ -14,17 +20,10 @@ on:
         type: boolean
         default: true
 
-      STOCK_DEVICE:
-        description: "Your stock device model"
+      TARGET_DEVICE:
+        description: "Target device model (Base)"
         required: true
-        type: choice
-        options:
-          - A52s5G
-          - SM-X216B
-          - SM-A528B
-          - None
-        default: "A52s5G"
-        
+        default: "SM-G990B"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
         description: "Input target device CSC code or direct SamFW download link"
@@ -141,7 +140,6 @@ jobs:
           else
               echo "ℹ️ STOCK_DEVICE is set to None."
           fi
-
 
       - name: Check disk space
         id: disk
