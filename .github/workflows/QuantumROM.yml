@@ -24,6 +24,7 @@ on:
           - SM-A528B
           - None
         default: "A52s5G"
+        
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
         description: "Input target device CSC code or direct SamFW download link"
