@@ -1,0 +1,4 @@
+# rscmgr rc file
+on property:sys.readahead.resource=1
+    readahead /system/priv-app/SamsungMessages/SamsungMessages.apk --fully
+    setprop sys.readahead.resource 0
