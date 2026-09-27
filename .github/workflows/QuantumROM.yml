@@ -10,7 +10,6 @@ on:
         options:
           - A52s5G
           - SM-X216B
-          - None
         default: "A52s5G"
 
       USE_UI_8_TETHERING_APEX:
