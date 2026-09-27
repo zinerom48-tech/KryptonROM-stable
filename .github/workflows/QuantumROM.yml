@@ -10,7 +10,6 @@ on:
         options:
           - A52s5G
           - SM-X216B
-          - SM-A528B
           - None
         default: "A52s5G"
 
@@ -23,7 +22,14 @@ on:
       TARGET_DEVICE:
         description: "Target device model (Base)"
         required: true
-        default: "SM-G990B"
+        type: choice
+        options:
+          - SM-G990B
+          - SM-A528B
+          - SM-S711B
+          - SM-X216B
+          - SM-X710
+        default: "SM-X216B"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
         description: "Input target device CSC code or direct SamFW download link"
@@ -130,7 +136,6 @@ jobs:
       - name: Validate STOCK_DEVICE - ${{ inputs.STOCK_DEVICE }}
         run: |
           if [ "$STOCK_DEVICE" != "None" ]; then
-              # الفحص محلياً من المجلد الموجود في المستودع بتاعك مباشرة
               if [ ! -d "$(pwd)/QuantumROM/Devices/$STOCK_DEVICE" ]; then
                 echo "❌ Unsupported: Device '$STOCK_DEVICE' not found in QuantumROM/Devices/"
                 exit 1
