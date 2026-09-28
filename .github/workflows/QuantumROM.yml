@@ -10,7 +10,7 @@ on:
         options:
           - A52s5G
           - SM-X216B
-        default: "A52s5G"
+        default: "SM-X216B"
 
       USE_UI_8_TETHERING_APEX:
         description: "Set True if your kernel BPF version is 5.4 (lower than 5.10)"
@@ -27,7 +27,7 @@ on:
           - SM-A528B
           - SM-S711B
           - SM-X216B
-          - SM-X710
+          - SM-X716B
         default: "SM-X216B"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
