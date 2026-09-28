@@ -293,7 +293,7 @@ jobs:
       - name: Compress all .img & make zip file before upload - ${{ inputs.COMPRESS_IMG_TO_XZ }}
         run: |
           echo "BUILD_TIME=$(TZ='Egypt' date '+%Y-%m-%d %I:%M:%S %p')" | tee -a "$GITHUB_ENV"
-          ZIP_NAME="KryptonROM_V1.2.2_${{ inputs.TARGET_DEVICE }}_Port_For_${{ inputs.STOCK_DEVICE }}.zip"
+          ZIP_NAME="KryptonROM_V1.2.7_${{ inputs.TARGET_DEVICE }}_Port_For_${{ inputs.STOCK_DEVICE }}.zip"
           ZIP_PATH="$OUT_DIR/$ZIP_NAME"
 
           if [ "$COMPRESS_IMG_TO_XZ" = "true" ] || [ "$COMPRESS_IMG_TO_XZ" = "True" ]; then
