@@ -68,7 +68,7 @@ PATCH_BT_LIB "$FIRM_DIR/$TARGET_DEVICE" "$WORK_DIR"
 # ضبط الـ Build Display ID مظبوط وبدون لخبطة
 BUILD_DISPLAY_NAME="KryptonROM V${VERSION} ${TARGET_DEVICE} base"
 
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: { ZineROM X KryptonROM Stable V1.2.7 }"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: { ZineROM X KryptonROM Stable V1.2.7 }"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: { ZineROM X KryptonROM Stable LahainaXgta9p }"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: { ZineROM X KryptonROM Stable LahainaXgta9p }"
 
 BUILD_IMG "$FIRM_DIR/$TARGET_DEVICE" "all" "$OUTPUT_FILESYSTEM" "$OUT_DIR"
