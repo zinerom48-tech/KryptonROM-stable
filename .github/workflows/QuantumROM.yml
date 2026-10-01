@@ -27,7 +27,7 @@ on:
           - SM-A528B
           - SM-S711B
           - SM-X216B
-          - SM-X716B
+          - SM-X516B
         default: "SM-X216B"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
