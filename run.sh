@@ -65,10 +65,21 @@ mv -f "$WORK_DIR"/*.jar "$FIRM_DIR/$TARGET_DEVICE/system/system/framework/"
 
 PATCH_BT_LIB "$FIRM_DIR/$TARGET_DEVICE" "$WORK_DIR"
 
-# ضبط الـ Build Display ID مظبوط وبدون لخبطة
-BUILD_DISPLAY_NAME="KryptonROM V${VERSION} ${TARGET_DEVICE} base"
+# ==============================================================================
+# 📸 1. Camera Fix (على System فقط)
+# ==============================================================================
+echo "📸 Applying Camera Fix Properties to system..."
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.flash.locked" "1"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.verifiedbootstate" "green"
 
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: { ZineROM X KryptonROM Stable LahainaXgta9p }"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "${B_ID} ${B_V} V-${VERSION}: { ZineROM X KryptonROM Stable LahainaXgta9p }"
+# ==============================================================================
+# 👑 2. Build Display ID (على System و Product فقط)
+# ==============================================================================
+CUSTOM_BUILD_ID="KryptonROM-v${VERSION}_Stable_${TARGET_DEVICE}"
 
+echo "🏷️ Setting Custom Build Display ID: ${CUSTOM_BUILD_ID}"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${CUSTOM_BUILD_ID}"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "${CUSTOM_BUILD_ID}"
+
+# ==============================================================================
 BUILD_IMG "$FIRM_DIR/$TARGET_DEVICE" "all" "$OUTPUT_FILESYSTEM" "$OUT_DIR"
