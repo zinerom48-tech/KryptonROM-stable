@@ -1,0 +1,57 @@
+#!/sbin/sh
+# Dynamic Partition Installer for Samsung A52s 5G (system + product)
+
+OUTFD=$2
+ZIPFILE=$3
+
+ui_print() {
+    echo -e "ui_print $1\nui_print" > /proc/self/fd/$OUTFD
+}
+
+ui_print "======================================"
+ui_print "      Flashing KryptonROM OneUI       "
+ui_print "      Target: Samsung A52s 5G         "
+ui_print "======================================"
+
+TMPDIR="/tmp/rom_installer"
+mkdir -p $TMPDIR
+unzip -o "$ZIPFILE" -d $TMPDIR
+
+get_block() {
+    PART_NAME=$1
+    if [ -b "/dev/block/mapper/$PART_NAME" ]; then
+        echo "/dev/block/mapper/$PART_NAME"
+    elif [ -b "/dev/block/by-name/$PART_NAME" ]; then
+        echo "/dev/block/by-name/$PART_NAME"
+    elif [ -b "/dev/block/bootdevice/by-name/$PART_NAME" ]; then
+        echo "/dev/block/bootdevice/by-name/$PART_NAME"
+    else
+        echo ""
+    fi
+}
+
+# 1. Flash System Image
+SYS_BLOCK=$(get_block "system")
+if [ -f "$TMPDIR/system.img" ] && [ -n "$SYS_BLOCK" ]; then
+    ui_print "[+] Flashing System Image..."
+    dd if="$TMPDIR/system.img" of="$SYS_BLOCK" bs=4M status=none
+else
+    ui_print "[-] Error: system.img or system partition missing!"
+fi
+
+# 2. Flash Product Image
+PROD_BLOCK=$(get_block "product")
+if [ -f "$TMPDIR/product.img" ] && [ -n "$PROD_BLOCK" ]; then
+    ui_print "[+] Flashing Product Image..."
+    dd if="$TMPDIR/product.img" of="$PROD_BLOCK" bs=4M status=none
+else
+    ui_print "[-] Error: product.img or product partition missing!"
+fi
+
+# Cleanup
+rm -rf $TMPDIR
+
+ui_print "======================================"
+ui_print "      Flashing Complete! Reboot NOW   "
+ui_print "======================================"
+exit 0
