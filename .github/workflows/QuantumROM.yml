@@ -10,6 +10,7 @@ on:
         options:
           - A52s5G
           - SM-X216B
+          - SM-G998B
         default: "SM-X216B"
 
       USE_UI_8_TETHERING_APEX:
@@ -28,6 +29,7 @@ on:
           - SM-S711B
           - SM-X216B
           - SM-X516B
+          - SM-G998B
         default: "SM-X216B"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
