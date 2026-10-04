@@ -35,7 +35,7 @@ get_block() {
 
 print_features() {
     ui_print " "
-    ui_print "✨ KryptonROM Features & Highlights:"
+    ui_print " KryptonROM Features & Highlights:"
     ui_print "-------------------------------------------"
     sleep 0.4
     ui_print " • Galaxy AI Features Enabled"
