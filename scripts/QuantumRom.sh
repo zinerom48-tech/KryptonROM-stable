@@ -2451,8 +2451,9 @@ MERGE_FOR_DSU() {
     # 1. Merge product
     if [ -d "${EXTRACTED_FIRM_DIR}/product" ]; then
         echo "- Merging product into system/system/product..."
-        mkdir -p "${SYS_DIR}/product"
-        cp -a "${EXTRACTED_FIRM_DIR}/product/." "${SYS_DIR}/product/"
+        [ -L "${SYS_DIR}/product" ] && rm -f "${SYS_DIR}/product"
+        mkdir -p "${SYS_DIR}/product" || true
+        cp -rfa "${EXTRACTED_FIRM_DIR}/product/." "${SYS_DIR}/product/" 2>/dev/null || true
         rm -rf "${EXTRACTED_FIRM_DIR}/product"
 
         if [ -f "${CONF_DIR}/product_fs_config" ]; then
@@ -2468,8 +2469,9 @@ MERGE_FOR_DSU() {
     # 2. Merge system_ext
     if [ -d "${EXTRACTED_FIRM_DIR}/system_ext" ]; then
         echo "- Merging system_ext into system/system/system_ext..."
-        mkdir -p "${SYS_DIR}/system_ext"
-        cp -a "${EXTRACTED_FIRM_DIR}/system_ext/." "${SYS_DIR}/system_ext/"
+        [ -L "${SYS_DIR}/system_ext" ] && rm -f "${SYS_DIR}/system_ext"
+        mkdir -p "${SYS_DIR}/system_ext" || true
+        cp -rfa "${EXTRACTED_FIRM_DIR}/system_ext/." "${SYS_DIR}/system_ext/" 2>/dev/null || true
         rm -rf "${EXTRACTED_FIRM_DIR}/system_ext"
 
         if [ -f "${CONF_DIR}/system_ext_fs_config" ]; then
