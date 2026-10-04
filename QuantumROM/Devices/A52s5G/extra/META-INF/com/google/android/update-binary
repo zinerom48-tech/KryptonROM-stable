@@ -1,5 +1,5 @@
 #!/sbin/sh
-# Dynamic Partition Installer for Samsung A52s 5G (system + product)
+# Dynamic Partition Installer for Samsung A52s 5G (System + Product)
 
 OUTFD=$2
 ZIPFILE=$3
@@ -8,15 +8,17 @@ ui_print() {
     echo -e "ui_print $1\nui_print" > /proc/self/fd/$OUTFD
 }
 
-ui_print "======================================"
-ui_print "     Flashing KryptonROM OneUI        "
-ui_print "      Target: Samsung A52s 5G         "
-ui_print "     By @ZineFather/@HOSHKA666        "
-ui_print "======================================"
+ui_print "==========================================="
+ui_print "          KryptonROM A52s 5G               "
+ui_print "            Target: One UI                 "
+ui_print "            By @Zinefather                 "
+ui_print "==========================================="
+sleep 1
 
 TMPDIR="/tmp/rom_installer"
 mkdir -p $TMPDIR
-unzip -o "$ZIPFILE" -d $TMPDIR
+ui_print "[*] Extracting ROM zip package..."
+unzip -o "$ZIPFILE" -d $TMPDIR > /dev/null 2>&1
 
 get_block() {
     PART_NAME=$1
@@ -31,28 +33,74 @@ get_block() {
     fi
 }
 
+print_features() {
+    ui_print " "
+    ui_print "✨ KryptonROM Features & Highlights:"
+    ui_print "-------------------------------------------"
+    sleep 0.4
+    ui_print " • Galaxy AI Features Enabled"
+    sleep 0.4
+    ui_print " • Adaptive Battery Optimizations"
+    sleep 0.4
+    ui_print " • Secure Folder Patch Included"
+    sleep 0.4
+    ui_print " • Integrated Stable ZineROM Features"
+    sleep 0.4
+    ui_print " • Chinese Smart Manager Support"
+    sleep 0.4
+    ui_print " • HighEnd Animations Enabled"
+    sleep 0.4
+    ui_print " • Samsung Custom Features Included"
+    sleep 0.4
+    ui_print " • Native Call Recording"
+    sleep 0.4
+    ui_print " • Screenshot/Recording Everywhere (ZineROM)"
+    sleep 0.4
+    ui_print " • EXT4 Optimized System Files"
+    sleep 0.4
+    ui_print " • Performance & Thermal Tuning"
+    sleep 0.4
+    ui_print " • Memory & Battery Optimizations"
+    sleep 0.4
+    ui_print " • Debloated & Cleaned System"
+    ui_print "-------------------------------------------"
+    ui_print " "
+}
+
 # 1. Flash System Image
 SYS_BLOCK=$(get_block "system")
 if [ -f "$TMPDIR/system.img" ] && [ -n "$SYS_BLOCK" ]; then
-    ui_print "[+] Flashing System Image..."
+    ui_print "[*] Flashing System Image..."
+    
+    # طباعة المميزات سطر سطر أثناء التثبيت
+    print_features
+    
     dd if="$TMPDIR/system.img" of="$SYS_BLOCK" bs=4M status=none
+    ui_print "[+] System Image Flashed Successfully!"
 else
     ui_print "[-] Error: system.img or system partition missing!"
+    exit 1
 fi
 
 # 2. Flash Product Image
 PROD_BLOCK=$(get_block "product")
 if [ -f "$TMPDIR/product.img" ] && [ -n "$PROD_BLOCK" ]; then
-    ui_print "[+] Flashing Product Image..."
+    ui_print "[*] Flashing Product Image..."
     dd if="$TMPDIR/product.img" of="$PROD_BLOCK" bs=4M status=none
+    ui_print "[+] Product Image Flashed Successfully!"
 else
     ui_print "[-] Error: product.img or product partition missing!"
+    exit 1
 fi
 
 # Cleanup
 rm -rf $TMPDIR
 
-ui_print "======================================"
-ui_print "  Flashing Complete! Format Data now  "
-ui_print "======================================"
+ui_print "==========================================="
+ui_print "        FLASHING COMPLETE!                 "
+ui_print "                                           "
+ui_print "  IMPORTANT: FORMAT DATA NOW IN TWRP!     "
+ui_print "  (Wipe -> Format Data -> type 'yes')     "
+ui_print "  Then Reboot System.                      "
+ui_print "==========================================="
 exit 0
