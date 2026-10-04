@@ -143,13 +143,28 @@ jobs:
 
       - name: Validate STOCK_DEVICE - ${{ inputs.STOCK_DEVICE }}
         run: |
-          if [ "$STOCK_DEVICE" != "None" ]; then
-              if [ ! -d "$(pwd)/QuantumROM/Devices/$STOCK_DEVICE" ]; then
-                echo "❌ Unsupported: Device '$STOCK_DEVICE' not found in QuantumROM/Devices/"
-                exit 1
-              fi
+          REPO="SN-Abdullah-Al-Noman/QuantumROM"
+          BRANCH="Devices"
+          LOCAL_DEV_DIR="$(pwd)/QuantumROM/Devices/$STOCK_DEVICE"
 
-              echo "✅ Device supported locally: $STOCK_DEVICE"
+          source "$(pwd)/scripts/git_utils.sh"
+
+          if [ "$STOCK_DEVICE" != "None" ]; then
+              if [ -d "$LOCAL_DEV_DIR" ] && [ -f "$LOCAL_DEV_DIR/config" ]; then
+                  echo "✅ Found device '$STOCK_DEVICE' in local repository!"
+              else
+                  echo "⚠️ Device '$STOCK_DEVICE' not found locally (or missing config). Checking remote source repository ($REPO)..."
+                  
+                  if ! curl -fsSL -H "Accept: application/vnd.github+json" \
+                      "https://api.github.com/repos/$REPO/contents/$STOCK_DEVICE?ref=$BRANCH" >/dev/null; then
+
+                    echo "❌ Unsupported: Device '$STOCK_DEVICE' not found in local repo nor in $REPO/$BRANCH"
+                    exit 1
+                  fi
+
+                  echo "✅ Device supported in remote repository: $STOCK_DEVICE. Downloading..."
+                  GIT_SPARSE_DOWNLOAD "$REPO" "$BRANCH" "$STOCK_DEVICE" "$LOCAL_DEV_DIR"
+              fi
           else
               echo "ℹ️ STOCK_DEVICE is set to None."
           fi
