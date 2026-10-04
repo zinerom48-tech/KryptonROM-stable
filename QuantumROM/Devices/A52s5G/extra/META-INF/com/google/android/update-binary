@@ -9,8 +9,9 @@ ui_print() {
 }
 
 ui_print "======================================"
-ui_print "      Flashing KryptonROM OneUI       "
+ui_print "     Flashing KryptonROM OneUI        "
 ui_print "      Target: Samsung A52s 5G         "
+ui_print "           By @ZineFather             "
 ui_print "======================================"
 
 TMPDIR="/tmp/rom_installer"
