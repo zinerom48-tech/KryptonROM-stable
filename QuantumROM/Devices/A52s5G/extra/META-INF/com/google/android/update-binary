@@ -11,7 +11,7 @@ ui_print() {
 ui_print "======================================"
 ui_print "     Flashing KryptonROM OneUI        "
 ui_print "      Target: Samsung A52s 5G         "
-ui_print "           By @ZineFather             "
+ui_print "     By @ZineFather/@HOSHKA666        "
 ui_print "======================================"
 
 TMPDIR="/tmp/rom_installer"
@@ -53,6 +53,6 @@ fi
 rm -rf $TMPDIR
 
 ui_print "======================================"
-ui_print "      Flashing Complete! Reboot NOW   "
+ui_print "  Flashing Complete! Format Data now  "
 ui_print "======================================"
 exit 0
