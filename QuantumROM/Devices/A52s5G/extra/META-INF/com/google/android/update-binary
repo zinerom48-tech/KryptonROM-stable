@@ -10,8 +10,8 @@ ui_print() {
 
 ui_print "==========================================="
 ui_print "          KryptonROM A52s 5G               "
-ui_print "            Target: One UI                 "
-ui_print "            By @Zinefather                 "
+ui_print "          Target: One UI 6.1               "
+ui_print "       By @Zinefather/@HOSHKA666           "
 ui_print "==========================================="
 sleep 1
 
