@@ -39,6 +39,12 @@ on:
         description: "Specific Samsung firmware version (Optional)"
         required: false
 
+      BUILD_DSU_SINGLE_IMG:
+        description: "Build Single System Image for DSU Sideloader"
+        required: true
+        type: boolean
+        default: false
+
       OUTPUT_FILESYSTEM:
         description: "Output filesystem type"
         required: true
@@ -120,6 +126,7 @@ jobs:
           echo "TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK=${{ inputs.TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK }}" | tee -a "$GITHUB_ENV"
           echo "TARGET_FW_VERSION=${{ inputs.TARGET_FW_VERSION }}" | tee -a "$GITHUB_ENV"
 
+          echo "BUILD_DSU_SINGLE_IMG=${{ inputs.BUILD_DSU_SINGLE_IMG }}" | tee -a "$GITHUB_ENV"
           echo "DEBLOAT_ROM=${{ inputs.DEBLOAT_ROM }}" | tee -a "$GITHUB_ENV"
           echo "USE_UI_8_TETHERING_APEX=${{ inputs.USE_UI_8_TETHERING_APEX }}" | tee -a "$GITHUB_ENV"
           echo "ADD_CHINA_SMART_MANAGER=${{ inputs.ADD_CHINA_SMART_MANAGER }}" | tee -a "$GITHUB_ENV"
