@@ -1,17 +1,20 @@
 #!/bin/bash
 
-if [ "$#" -lt 4 ]; then
-    echo "Usage: $0 <STOCK_DEVICE> <TARGET_DEVICE> <USE_UI_8_TETHERING_APEX> <OUTPUT_FILESYSTEM>"
+if [ "$#" -lt 5 ]; then
+    echo "Usage: $0 <ROM_NAME> <STOCK_DEVICE> <TARGET_DEVICE> <USE_UI_8_TETHERING_APEX> <OUTPUT_FILESYSTEM>"
+    echo "Example: $0 ZineROM A52s5G SM-X216B true erofs"
     exit 1
 fi
 
+# ROM Config
+export ROM_NAME="$1"
 VERSION="1.2.7"
 
 # Device info
-export STOCK_DEVICE="$1"
-export TARGET_DEVICE="$2"
-export USE_UI_8_TETHERING_APEX="$3"
-export OUTPUT_FILESYSTEM="$4"
+export STOCK_DEVICE="$2"
+export TARGET_DEVICE="$3"
+export USE_UI_8_TETHERING_APEX="$4"
+export OUTPUT_FILESYSTEM="$5"
 
 # Directories
 export FIRM_DIR="$(pwd)/FW"
@@ -73,9 +76,9 @@ BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.flash.locked" "1"
 BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.verifiedbootstate" "green"
 
 # ==============================================================================
-# 👑 2. Build Display ID (على System و Product فقط)
+# 👑 2. Build Display ID (يتغير ديناميكياً حسب اسم الروم المختار)
 # ==============================================================================
-CUSTOM_BUILD_ID="KryptonROM-v${VERSION}_Stable_${TARGET_DEVICE}"
+CUSTOM_BUILD_ID="${ROM_NAME}-v${VERSION}_Stable_${TARGET_DEVICE}"
 
 echo "🏷️ Setting Custom Build Display ID: ${CUSTOM_BUILD_ID}"
 BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${CUSTOM_BUILD_ID}"
