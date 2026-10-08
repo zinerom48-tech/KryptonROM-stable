@@ -3,6 +3,22 @@ name: KryptonROM Engine
 on:
   workflow_dispatch:
     inputs:
+      ROM_NAME:
+        description: "Choose ROM Name"
+        required: true
+        type: choice
+        options:
+          - ZineROM
+          - KryptonROM
+          - HiroROM
+        default: "ZineROM"
+
+      ROM_VERSION:
+        description: "ROM Version (Fixed to 1.2.7)"
+        required: true
+        type: string
+        default: "1.2.7"
+
       STOCK_DEVICE:
         description: "Your stock device model"
         required: true
@@ -107,7 +123,7 @@ on:
 
 jobs:
   build:
-    name: Start KryptonROM Engine
+    name: Start ${{ inputs.ROM_NAME }} Engine
     runs-on: ubuntu-22.04
 
     steps:
@@ -123,6 +139,8 @@ jobs:
           echo "APKTOOL=$(pwd)/bin/java/apktool.jar" | tee -a "$GITHUB_ENV"
           echo "VNDKS_COLLECTION=$(pwd)/QuantumROM/vndks" | tee -a "$GITHUB_ENV"
 
+          echo "ROM_NAME=${{ inputs.ROM_NAME }}" | tee -a "$GITHUB_ENV"
+          echo "ROM_VERSION=${{ inputs.ROM_VERSION }}" | tee -a "$GITHUB_ENV"
           echo "STOCK_DEVICE=${{ inputs.STOCK_DEVICE }}" | tee -a "$GITHUB_ENV"
           echo "TARGET_DEVICE=${{ inputs.TARGET_DEVICE }}" | tee -a "$GITHUB_ENV"
           echo "TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK=${{ inputs.TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK }}" | tee -a "$GITHUB_ENV"
@@ -317,7 +335,9 @@ jobs:
       - name: Compress all .img & make zip file before upload - ${{ inputs.COMPRESS_IMG_TO_XZ }}
         run: |
           echo "BUILD_TIME=$(TZ='Egypt' date '+%Y-%m-%d %I:%M:%S %p')" | tee -a "$GITHUB_ENV"
-          ZIP_NAME="KryptonROM_V1.2.7_${{ inputs.TARGET_DEVICE }}_Port_For_${{ inputs.STOCK_DEVICE }}.zip"
+          
+          # صيغة الاسم المطلوب: [اسم الروم]_[اسم الجهاز]_V[الفيرجن]
+          ZIP_NAME="${{ inputs.ROM_NAME }}_${{ inputs.STOCK_DEVICE }}_V${{ inputs.ROM_VERSION }}.zip"
           ZIP_PATH="$OUT_DIR/$ZIP_NAME"
 
           if [ "$COMPRESS_IMG_TO_XZ" = "true" ] || [ "$COMPRESS_IMG_TO_XZ" = "True" ]; then
