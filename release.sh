@@ -4,13 +4,19 @@ set -e
 
 # Required env vars:
 # ZIP_PATH, GIT_TOKEN, BUILD_TIME
-# GitHub automatically provides: GITHUB_REPOSITORY
+# GitHub automatically provides: GITHUB_REPOSITORY, GITHUB_STEP_SUMMARY
 
 TAG_NAME="${TARGET_DEVICE}-$(date +%s)"
 RELEASE_NAME="${TARGET_DEVICE} Port ${STOCK_DEVICE}"
 
 echo "Uploading to GoFile..."
-GOFILE_LINK=$(sudo bash upload.sh "$ZIP_PATH")
+# استخراج الرابط الصحيح فقط وتصفية أي نصوص زايدة
+GOFILE_LINK=$(sudo bash upload.sh "$ZIP_PATH" | grep -oE "https://gofile\.io/d/[a-zA-Z0-9]+" | tail -n 1)
+
+if [ -z "$GOFILE_LINK" ]; then
+  GOFILE_LINK="Upload failed or link not found."
+fi
+
 echo "🌎 File uploaded here: $GOFILE_LINK"
 
 # File info
@@ -40,10 +46,17 @@ $GOFILE_LINK
 • Used OneUI 8 Tethering APEX: $USE_UI_8_TETHERING_APEX
 "
 
+# 1. طباعة النتيجة مباشرة في ملخص صفحة الـ Workflow الخارجية (Run Summary)
+if [ -n "$GITHUB_STEP_SUMMARY" ]; then
+  echo "## 🚀 Build Completed Successfully!" >> $GITHUB_STEP_SUMMARY
+  echo "" >> $GITHUB_STEP_SUMMARY
+  echo "$RELEASE_BODY" >> $GITHUB_STEP_SUMMARY
+fi
+
 # Convert to JSON-safe string
 JSON_BODY=$(printf '%s' "$RELEASE_BODY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')
 
-# Create release
+# 2. إنشاء الـ Release في GitHub
 if [ -n "$GIT_TOKEN" ]; then
   echo "Creating GitHub release..."
 
@@ -58,5 +71,5 @@ if [ -n "$GIT_TOKEN" ]; then
       \"prerelease\": false
     }"
 else
-  echo "GIT_TOKEN not found. Skipping release."
+  echo "GIT_TOKEN not found. Skipping release creation."
 fi
