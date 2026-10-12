@@ -17,13 +17,13 @@ on:
         description: "ROM Version (Fixed to 1.2.7)"
         required: true
         type: string
-        default: "1.2.7"
+        default: "V3.2.2"
 
       STOCK_DEVICE:
         description: "Your stock device model (e.g. A52s5G, SM-X216B, or type any new device)"
         required: true
         type: string
-        default: "SM-X216B"
+        default: "SM-A155F"
 
       USE_UI_8_TETHERING_APEX:
         description: "Set True if your kernel BPF version is 5.4 (lower than 5.10)"
@@ -35,7 +35,7 @@ on:
         description: "Target device model (Base) (e.g. SM-G990B, SM-A528B, or type any new device)"
         required: true
         type: string
-        default: "SM-X216B"
+        default: "SM-S711B"
 
       TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK:
         description: "Input target device CSC code or direct SamFW download link"
