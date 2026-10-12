@@ -17,7 +17,7 @@ on:
         description: "ROM Version (Fixed to 1.2.7)"
         required: true
         type: string
-        default: "V3.2.2"
+        default: "3.2.2"
 
       STOCK_DEVICE:
         description: "Your stock device model (e.g. A52s5G, SM-X216B, or type any new device)"
