@@ -1643,6 +1643,21 @@ REMOVE_CAMERA_FILES() {
 }
 
 
+REMOVE_ESIM_FILES() {
+    if [ "$#" -ne 1 ]; then
+        echo -e "Usage: ${FUNCNAME[0]} <EXTRACTED_FIRM_DIR>"
+        return 1
+    fi
+
+    local EXTRACTED_FIRM_DIR="$1"
+    echo "- Removing eSIM related files."
+    
+    rm -f "${EXTRACTED_FIRM_DIR}"/vendor/etc/vintf/manifest/*esim*.xml
+    rm -f "${EXTRACTED_FIRM_DIR}"/system/system/app/*Esim*
+    rm -f "${EXTRACTED_FIRM_DIR}"/system/system/priv-app/*Esim*
+}
+
+
 FIX_BLUETOOTH() {
     if [ "$#" -ne 1 ]; then
         echo "Usage: ${FUNCNAME[0]} <EXTRACTED_FIRM_DIR>"
