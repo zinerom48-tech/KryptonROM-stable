@@ -1652,9 +1652,12 @@ REMOVE_ESIM_FILES() {
     local EXTRACTED_FIRM_DIR="$1"
     echo "- Removing eSIM related files."
     
-    rm -f "${EXTRACTED_FIRM_DIR}"/vendor/etc/vintf/manifest/*esim*.xml
-    rm -f "${EXTRACTED_FIRM_DIR}"/system/system/app/*Esim*
-    rm -f "${EXTRACTED_FIRM_DIR}"/system/system/priv-app/*Esim*
+    # استخدام rm -rf لحذف المجلدات والملفات معاً دون أخطاء
+    rm -rf "${EXTRACTED_FIRM_DIR}"/vendor/etc/vintf/manifest/*esim*.xml
+    rm -rf "${EXTRACTED_FIRM_DIR}"/system/system/app/*Esim*
+    rm -rf "${EXTRACTED_FIRM_DIR}"/system/system/app/*esim*
+    rm -rf "${EXTRACTED_FIRM_DIR}"/system/system/priv-app/*Esim*
+    rm -rf "${EXTRACTED_FIRM_DIR}"/system/system/priv-app/*esim*
 }
 
 
