@@ -337,6 +337,13 @@ jobs:
           SET_ROM_BUILD_ID "$FIRM_DIR/$TARGET_DEVICE"
           echo "Applied on-device build ID: $CUSTOM_BUILD_ID"
 
+          # Legacy camera compatibility overrides; these do not change actual Knox/bootloader state.
+          BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.boot.flash.locked 1
+          BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.boot.verifiedbootstate green
+          grep -Fqx 'ro.boot.flash.locked=1' "$FIRM_DIR/$TARGET_DEVICE/system/system/build.prop"
+          grep -Fqx 'ro.boot.verifiedbootstate=green' "$FIRM_DIR/$TARGET_DEVICE/system/system/build.prop"
+          echo "Verified camera compatibility properties in system build.prop."
+
           ANDROID_VERSION="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.system.build.version.release)"
           if [ -z "$ANDROID_VERSION" ]; then
             ANDROID_VERSION="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.build.version.release)"

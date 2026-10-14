@@ -72,6 +72,11 @@ mv -f "$WORK_DIR"/*.jar "$FIRM_DIR/$TARGET_DEVICE/system/system/framework/"
 
 PATCH_BT_LIB "$FIRM_DIR/$TARGET_DEVICE" "$WORK_DIR"
 
+# Legacy camera compatibility overrides: these set reported properties only;
+# they do not change the bootloader lock or the device's actual Knox state.
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.flash.locked" "1"
+BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.verifiedbootstate" "green"
+
 SET_ROM_BUILD_ID "$FIRM_DIR/$TARGET_DEVICE"
 
 BUILD_IMG "$FIRM_DIR/$TARGET_DEVICE" "all" "$OUTPUT_FILESYSTEM" "$OUT_DIR"
