@@ -1906,6 +1906,30 @@ BUILD_PROP() {
 }
 
 
+GET_PORTED_DEVICE_MODEL() {
+    if [ "$#" -ne 1 ] || [ -z "$1" ] || [ "$1" = "None" ]; then
+        echo "Usage: GET_PORTED_DEVICE_MODEL <STOCK_DEVICE profile>" >&2
+        return 1
+    fi
+
+    local PROFILE="$1"
+    local PROFILE_CONFIG="${DEVICES_DIR:-$(pwd)/QuantumROM/Devices}/$PROFILE/config"
+    local MODEL=""
+
+    if [ -f "$PROFILE_CONFIG" ]; then
+        MODEL="$(sed -n 's/^PORTED_DEVICE_MODEL=//p' "$PROFILE_CONFIG" | head -n 1 | tr -d '\r')"
+    fi
+    if [ -z "$MODEL" ] && [[ "$PROFILE" =~ ^SM-[A-Z0-9]+$ ]]; then
+        MODEL="$PROFILE"
+    fi
+    if [[ ! "$MODEL" =~ ^SM-[A-Z0-9]+$ ]]; then
+        echo "Device profile '$PROFILE' must define PORTED_DEVICE_MODEL=SM-... in its config." >&2
+        return 1
+    fi
+
+    printf '%s\n' "$MODEL"
+}
+
 SET_ROM_BUILD_ID() {
     if [ "$#" -ne 1 ]; then
         echo "Usage: ${FUNCNAME[0]} <EXTRACTED_FIRM_DIR>"
