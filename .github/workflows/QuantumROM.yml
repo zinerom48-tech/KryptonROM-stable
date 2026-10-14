@@ -1,5 +1,5 @@
 name: KryptonROM Engine
-run-name: ${{ inputs.ROM_NAME }} v${{ inputs.ROM_VERSION }} for ${{ inputs.STOCK_DEVICE }} (base ${{ inputs.TARGET_DEVICE }})
+run-name: ${{ inputs.ROM_NAME }} v${{ inputs.ROM_VERSION }} for ${{ inputs.PORTED_DEVICE_MODEL }} (profile ${{ inputs.STOCK_DEVICE }}; base ${{ inputs.TARGET_DEVICE }})
 
 on:
   workflow_dispatch:
@@ -25,6 +25,12 @@ on:
         required: true
         type: string
         default: "A52s5G"
+
+      PORTED_DEVICE_MODEL:
+        description: "Samsung model of the phone receiving the port (not the base phone), e.g. SM-A528B"
+        required: true
+        type: string
+        default: "SM-A528B"
 
       USE_UI_8_TETHERING_APEX:
         description: "Set True if your kernel BPF version is 5.4 (lower than 5.10)"
@@ -116,7 +122,7 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ inputs.ROM_NAME }} v${{ inputs.ROM_VERSION }} for ${{ inputs.STOCK_DEVICE }}
+    name: Build ${{ inputs.ROM_NAME }} v${{ inputs.ROM_VERSION }} for ${{ inputs.PORTED_DEVICE_MODEL }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -135,6 +141,7 @@ jobs:
           echo "ROM_NAME=${{ inputs.ROM_NAME }}" | tee -a "$GITHUB_ENV"
           echo "ROM_VERSION=${{ inputs.ROM_VERSION }}" | tee -a "$GITHUB_ENV"
           echo "STOCK_DEVICE=${{ inputs.STOCK_DEVICE }}" | tee -a "$GITHUB_ENV"
+          echo "PORTED_DEVICE_MODEL=${{ inputs.PORTED_DEVICE_MODEL }}" | tee -a "$GITHUB_ENV"
           echo "TARGET_DEVICE=${{ inputs.TARGET_DEVICE }}" | tee -a "$GITHUB_ENV"
           echo "TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK=${{ inputs.TARGET_DEVICE_CSC_OR_DOWNLOAD_LINK }}" | tee -a "$GITHUB_ENV"
           echo "TARGET_FW_VERSION=${{ inputs.TARGET_FW_VERSION }}" | tee -a "$GITHUB_ENV"
@@ -333,6 +340,14 @@ jobs:
             echo "Invalid ROM_VERSION; use letters, numbers, dot, underscore, or hyphen." >&2
             exit 1
           fi
+          if [[ ! "$PORTED_DEVICE_MODEL" =~ ^SM-[A-Z0-9]+$ ]]; then
+            echo "Invalid PORTED_DEVICE_MODEL; use a Samsung model such as SM-A528B." >&2
+            exit 1
+          fi
+          if [ "$STOCK_DEVICE" = "A52s5G" ] && [ "$PORTED_DEVICE_MODEL" != "SM-A528B" ]; then
+            echo "A52s5G profile must use PORTED_DEVICE_MODEL=SM-A528B, not the base-device model." >&2
+            exit 1
+          fi
 
           SET_ROM_BUILD_ID "$FIRM_DIR/$TARGET_DEVICE"
           echo "Applied on-device build ID: $CUSTOM_BUILD_ID"
@@ -376,6 +391,7 @@ jobs:
             printf -- '- ROM: `%s`\n' "$ROM_NAME"
             printf -- '- ROM version: `%s`\n' "$ROM_VERSION"
             printf -- '- On-device build ID: `%s`\n' "$CUSTOM_BUILD_ID"
+            printf -- '- Ported device model: `%s`\n' "$PORTED_DEVICE_MODEL"
             printf -- '- Target profile: `%s`\n' "$STOCK_DEVICE"
             printf -- '- Base firmware device: `%s`\n' "$TARGET_DEVICE"
             printf -- '- Android version: `%s`\n' "${ANDROID_VERSION:-Unknown}"
@@ -391,7 +407,7 @@ jobs:
       - name: Compress all .img & make zip file before upload - ${{ inputs.COMPRESS_IMG_TO_XZ }}
         run: |
           echo "BUILD_TIME=$(TZ='Egypt' date '+%Y-%m-%d %I:%M:%S %p')" | tee -a "$GITHUB_ENV"
-          ZIP_NAME="${ROM_NAME}_${STOCK_DEVICE}_V${ROM_VERSION}.zip"
+          ZIP_NAME="${ROM_NAME}_${PORTED_DEVICE_MODEL}_V${ROM_VERSION}.zip"
           ZIP_PATH="$OUT_DIR/$ZIP_NAME"
 
           if [ "$COMPRESS_IMG_TO_XZ" = "true" ] || [ "$COMPRESS_IMG_TO_XZ" = "True" ]; then

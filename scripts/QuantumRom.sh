@@ -1915,7 +1915,7 @@ SET_ROM_BUILD_ID() {
     local EXTRACTED_FIRM_DIR="$1"
     local ROM_NAME_VALUE="${ROM_NAME:-}"
     local ROM_VERSION_VALUE="${ROM_VERSION:-}"
-    local BASE_DEVICE_VALUE="${TARGET_DEVICE:-}"
+    local PORTED_DEVICE_MODEL_VALUE="${PORTED_DEVICE_MODEL:-}"
 
     if [[ ! "$ROM_NAME_VALUE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$ ]]; then
         echo "Invalid or missing ROM_NAME: $ROM_NAME_VALUE" >&2
@@ -1925,12 +1925,12 @@ SET_ROM_BUILD_ID() {
         echo "Invalid or missing ROM_VERSION: $ROM_VERSION_VALUE" >&2
         return 1
     fi
-    if [[ ! "$BASE_DEVICE_VALUE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]; then
-        echo "Invalid or missing TARGET_DEVICE: $BASE_DEVICE_VALUE" >&2
+    if [[ ! "$PORTED_DEVICE_MODEL_VALUE" =~ ^SM-[A-Z0-9]+$ ]]; then
+        echo "Invalid or missing PORTED_DEVICE_MODEL (expected a model such as SM-A528B): $PORTED_DEVICE_MODEL_VALUE" >&2
         return 1
     fi
 
-    CUSTOM_BUILD_ID="${ROM_NAME_VALUE}-v${ROM_VERSION_VALUE}_Stable_${BASE_DEVICE_VALUE}"
+    CUSTOM_BUILD_ID="${ROM_NAME_VALUE} V${ROM_VERSION_VALUE} [${PORTED_DEVICE_MODEL_VALUE}]"
     export CUSTOM_BUILD_ID
     echo "- Setting ro.build.display.id to $CUSTOM_BUILD_ID"
     BUILD_PROP "$EXTRACTED_FIRM_DIR" "system" "ro.build.display.id" "$CUSTOM_BUILD_ID" || return 1

@@ -7,6 +7,7 @@ set -Eeuo pipefail
 : "${ROM_NAME:?ROM_NAME is required}"
 : "${ROM_VERSION:?ROM_VERSION is required}"
 : "${STOCK_DEVICE:?STOCK_DEVICE is required}"
+: "${PORTED_DEVICE_MODEL:?PORTED_DEVICE_MODEL is required}"
 : "${TARGET_DEVICE:?TARGET_DEVICE is required}"
 
 TOKEN="${GIT_TOKEN:-${GITHUB_TOKEN:-}}"
@@ -20,7 +21,7 @@ if [ ! -s "$ZIP_PATH" ]; then
 fi
 
 BUILD_TIME="${BUILD_TIME:-Unknown}"
-CUSTOM_BUILD_ID="${CUSTOM_BUILD_ID:-${ROM_NAME}-v${ROM_VERSION}_Stable_${TARGET_DEVICE}}"
+CUSTOM_BUILD_ID="${CUSTOM_BUILD_ID:-${ROM_NAME} V${ROM_VERSION} [${PORTED_DEVICE_MODEL}]}"
 BASE_FIRMWARE_VERSION="${VERSION:-Unknown}"
 ANDROID_VERSION="${ANDROID_VERSION:-Unknown}"
 ONE_UI_VERSION="${ONE_UI_VERSION:-Unknown}"
@@ -53,6 +54,7 @@ $GOFILE_LINK
 - ROM name: $ROM_NAME
 - ROM version: $ROM_VERSION
 - On-device build ID: $CUSTOM_BUILD_ID
+- Ported device model: $PORTED_DEVICE_MODEL
 - Target device profile: $STOCK_DEVICE
 - Base device: $TARGET_DEVICE
 - Base firmware version: $BASE_FIRMWARE_VERSION
@@ -71,10 +73,10 @@ $GOFILE_LINK
 EOF
 )"
 
-TAG_PREFIX="$(printf '%s' "${ROM_NAME}-${ROM_VERSION}-${STOCK_DEVICE}-${TARGET_DEVICE}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+|-+$//g')"
+TAG_PREFIX="$(printf '%s' "${ROM_NAME}-${PORTED_DEVICE_MODEL}-V${ROM_VERSION}" | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+|-+$//g')"
 TAG_SUFFIX="${GITHUB_RUN_ID:-$(date -u +%Y%m%d%H%M%S)}"
 TAG_NAME="${TAG_PREFIX}-${TAG_SUFFIX}"
-RELEASE_NAME="${ROM_NAME} v${ROM_VERSION} for ${STOCK_DEVICE} (base ${TARGET_DEVICE})"
+RELEASE_NAME="${ROM_NAME} V${ROM_VERSION} [${PORTED_DEVICE_MODEL}]"
 JSON_BODY="$(printf '%s' "$RELEASE_BODY" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')"
 JSON_NAME="$(printf '%s' "$RELEASE_NAME" | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))')"
 
