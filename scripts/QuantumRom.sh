@@ -1906,6 +1906,45 @@ BUILD_PROP() {
 }
 
 
+SET_ROM_BUILD_ID() {
+    if [ "$#" -ne 1 ]; then
+        echo "Usage: ${FUNCNAME[0]} <EXTRACTED_FIRM_DIR>"
+        return 1
+    fi
+
+    local EXTRACTED_FIRM_DIR="$1"
+    local ROM_NAME_VALUE="${ROM_NAME:-}"
+    local ROM_VERSION_VALUE="${ROM_VERSION:-}"
+    local BASE_DEVICE_VALUE="${TARGET_DEVICE:-}"
+
+    if [[ ! "$ROM_NAME_VALUE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,39}$ ]]; then
+        echo "Invalid or missing ROM_NAME: $ROM_NAME_VALUE" >&2
+        return 1
+    fi
+    if [[ ! "$ROM_VERSION_VALUE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$ ]]; then
+        echo "Invalid or missing ROM_VERSION: $ROM_VERSION_VALUE" >&2
+        return 1
+    fi
+    if [[ ! "$BASE_DEVICE_VALUE" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$ ]]; then
+        echo "Invalid or missing TARGET_DEVICE: $BASE_DEVICE_VALUE" >&2
+        return 1
+    fi
+
+    CUSTOM_BUILD_ID="${ROM_NAME_VALUE}-v${ROM_VERSION_VALUE}_Stable_${BASE_DEVICE_VALUE}"
+    export CUSTOM_BUILD_ID
+    echo "- Setting ro.build.display.id to $CUSTOM_BUILD_ID"
+    BUILD_PROP "$EXTRACTED_FIRM_DIR" "system" "ro.build.display.id" "$CUSTOM_BUILD_ID" || return 1
+
+    if [ -f "$EXTRACTED_FIRM_DIR/product/etc/build.prop" ]; then
+        BUILD_PROP "$EXTRACTED_FIRM_DIR" "product" "ro.build.display.id" "$CUSTOM_BUILD_ID" || return 1
+    fi
+
+    if [ -n "${GITHUB_ENV:-}" ]; then
+        printf 'CUSTOM_BUILD_ID=%s\n' "$CUSTOM_BUILD_ID" >> "$GITHUB_ENV"
+    fi
+}
+
+
 REMOVE_TLC_ICC() {
     if [ "$#" -ne 1 ]; then
         echo -e "Usage: ${FUNCNAME[0]} <EXTRACTED_FIRM_DIR>"

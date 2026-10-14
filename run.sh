@@ -1,14 +1,18 @@
 #!/bin/bash
 
 if [ "$#" -lt 5 ]; then
-    echo "Usage: $0 <ROM_NAME> <STOCK_DEVICE> <TARGET_DEVICE> <USE_UI_8_TETHERING_APEX> <OUTPUT_FILESYSTEM>"
-    echo "Example: $0 ZineROM A52s5G SM-X216B true erofs"
+    echo "Usage: $0 <ROM_NAME> <STOCK_DEVICE> <TARGET_DEVICE> <USE_UI_8_TETHERING_APEX> <OUTPUT_FILESYSTEM> [ROM_VERSION]"
+    echo "Example: $0 ZineROM A52s5G SM-X216B true erofs 3.2.2"
     exit 1
 fi
 
 # ROM Config
 export ROM_NAME="$1"
-VERSION="1.2.7"
+if [ "$#" -ge 6 ]; then
+    export ROM_VERSION="$6"
+else
+    export ROM_VERSION="${ROM_VERSION:-3.2.2}"
+fi
 
 # Device info
 export STOCK_DEVICE="$2"
@@ -68,21 +72,6 @@ mv -f "$WORK_DIR"/*.jar "$FIRM_DIR/$TARGET_DEVICE/system/system/framework/"
 
 PATCH_BT_LIB "$FIRM_DIR/$TARGET_DEVICE" "$WORK_DIR"
 
-# ==============================================================================
-# 📸 1. Camera Fix (على System فقط)
-# ==============================================================================
-echo "📸 Applying Camera Fix Properties to system..."
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.flash.locked" "1"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.boot.verifiedbootstate" "green"
+SET_ROM_BUILD_ID "$FIRM_DIR/$TARGET_DEVICE"
 
-# ==============================================================================
-# 👑 2. Build Display ID (يتغير ديناميكياً حسب اسم الروم المختار)
-# ==============================================================================
-CUSTOM_BUILD_ID="${ROM_NAME}-v${VERSION}_Stable_${TARGET_DEVICE}"
-
-echo "🏷️ Setting Custom Build Display ID: ${CUSTOM_BUILD_ID}"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "system" "ro.build.display.id" "${CUSTOM_BUILD_ID}"
-BUILD_PROP "$FIRM_DIR/$TARGET_DEVICE" "product" "ro.build.display.id" "${CUSTOM_BUILD_ID}"
-
-# ==============================================================================
 BUILD_IMG "$FIRM_DIR/$TARGET_DEVICE" "all" "$OUTPUT_FILESYSTEM" "$OUT_DIR"

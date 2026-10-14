@@ -1,4 +1,5 @@
 name: KryptonROM Engine
+run-name: ${{ inputs.ROM_NAME }} v${{ inputs.ROM_VERSION }} for ${{ inputs.STOCK_DEVICE }} (base ${{ inputs.TARGET_DEVICE }})
 
 on:
   workflow_dispatch:
@@ -14,16 +15,16 @@ on:
         default: "ZineROM"
 
       ROM_VERSION:
-        description: "ROM Version (Fixed to 1.2.7)"
+        description: "ROM version used in the on-device build ID, ZIP filename, and release"
         required: true
         type: string
         default: "3.2.2"
 
       STOCK_DEVICE:
-        description: "Your stock device model (e.g. A52s5G, SM-X216B, or type any new device)"
+        description: "Target stock-device profile key; for Galaxy A52s 5G use exactly A52s5G (not SM-A528B or SM-A536B)"
         required: true
         type: string
-        default: "SM-A155F"
+        default: "A52s5G"
 
       USE_UI_8_TETHERING_APEX:
         description: "Set True if your kernel BPF version is 5.4 (lower than 5.10)"
@@ -110,9 +111,12 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    name: Start ${{ inputs.ROM_NAME }} Engine
+    name: Build ${{ inputs.ROM_NAME }} v${{ inputs.ROM_VERSION }} for ${{ inputs.STOCK_DEVICE }}
     runs-on: ubuntu-22.04
 
     steps:
@@ -316,6 +320,62 @@ jobs:
           DISABLE_SECURITY "$FIRM_DIR/$TARGET_DEVICE"
           set +x
 
+      - name: Apply selected ROM build ID and verify A52s device overlay
+        run: |
+          set -euo pipefail
+          source "$(pwd)/scripts/QuantumRom.sh"
+
+          case "$ROM_NAME" in
+            ZineROM|KryptonROM|HiroROM) ;;
+            *) echo "Unsupported ROM_NAME: $ROM_NAME" >&2; exit 1 ;;
+          esac
+          if [[ ! "$ROM_VERSION" =~ ^[A-Za-z0-9][A-Za-z0-9._-]{0,31}$ ]]; then
+            echo "Invalid ROM_VERSION; use letters, numbers, dot, underscore, or hyphen." >&2
+            exit 1
+          fi
+
+          SET_ROM_BUILD_ID "$FIRM_DIR/$TARGET_DEVICE"
+          echo "Applied on-device build ID: $CUSTOM_BUILD_ID"
+
+          ANDROID_VERSION="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.system.build.version.release)"
+          if [ -z "$ANDROID_VERSION" ]; then
+            ANDROID_VERSION="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.build.version.release)"
+          fi
+          ONE_UI_VERSION="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.build.version.oneui)"
+          CPU_ABILIST="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" system ro.system.product.cpu.abilist)"
+          if [ -z "$CPU_ABILIST" ]; then
+            CPU_ABILIST="$(GET_PROP "$FIRM_DIR/$TARGET_DEVICE" product ro.product.cpu.abilist)"
+          fi
+          {
+            printf 'ANDROID_VERSION=%s\n' "${ANDROID_VERSION:-Unknown}"
+            printf 'ONE_UI_VERSION=%s\n' "${ONE_UI_VERSION:-Unknown}"
+            printf 'CPU_ABILIST=%s\n' "${CPU_ABILIST:-Unknown}"
+          } >> "$GITHUB_ENV"
+
+          if [ "$STOCK_DEVICE" = "A52s5G" ]; then
+            STOCK_PROFILE="$DEVICES_DIR/A52s5G/Stock/system/system/cameradata"
+            BUILT_CAMERA="$FIRM_DIR/$TARGET_DEVICE/system/system/cameradata"
+            for camera_file in camera-feature.xml aremoji-feature.xml; do
+              if ! cmp -s "$STOCK_PROFILE/$camera_file" "$BUILT_CAMERA/$camera_file"; then
+                echo "A52s5G camera profile was not applied: $camera_file differs or is missing." >&2
+                exit 1
+              fi
+            done
+            echo "Verified A52s5G camera profile files are present in the image input."
+          fi
+
+          {
+            printf '## Build selection\n\n'
+            printf -- '- ROM: `%s`\n' "$ROM_NAME"
+            printf -- '- ROM version: `%s`\n' "$ROM_VERSION"
+            printf -- '- On-device build ID: `%s`\n' "$CUSTOM_BUILD_ID"
+            printf -- '- Target profile: `%s`\n' "$STOCK_DEVICE"
+            printf -- '- Base firmware device: `%s`\n' "$TARGET_DEVICE"
+            printf -- '- Android version: `%s`\n' "${ANDROID_VERSION:-Unknown}"
+            printf -- '- One UI version: `%s`\n' "${ONE_UI_VERSION:-Unknown}"
+            printf -- '- CPU ABI list: `%s`\n' "${CPU_ABILIST:-Unknown}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build img - ${{ inputs.OUTPUT_FILESYSTEM }}
         run: |
           source "$(pwd)/scripts/QuantumRom.sh"
@@ -324,7 +384,7 @@ jobs:
       - name: Compress all .img & make zip file before upload - ${{ inputs.COMPRESS_IMG_TO_XZ }}
         run: |
           echo "BUILD_TIME=$(TZ='Egypt' date '+%Y-%m-%d %I:%M:%S %p')" | tee -a "$GITHUB_ENV"
-          ZIP_NAME="${{ inputs.ROM_NAME }}_${{ inputs.STOCK_DEVICE }}_V${{ inputs.ROM_VERSION }}.zip"
+          ZIP_NAME="${ROM_NAME}_${STOCK_DEVICE}_V${ROM_VERSION}.zip"
           ZIP_PATH="$OUT_DIR/$ZIP_NAME"
 
           if [ "$COMPRESS_IMG_TO_XZ" = "true" ] || [ "$COMPRESS_IMG_TO_XZ" = "True" ]; then
@@ -342,6 +402,6 @@ jobs:
 
       - name: Upload file in GoFile & Create Release
         env:
-          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_TOKEN: ${{ github.token }}
         run: |
           bash release.sh
