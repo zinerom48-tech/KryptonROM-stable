@@ -18,7 +18,7 @@ on:
         description: "ROM version used in the on-device build ID, ZIP filename, and release"
         required: true
         type: string
-        default: "3.2.2"
+        default: "3.2.4"
 
       STOCK_DEVICE:
         description: "Profile of the phone receiving the port; for Galaxy A52s 5G choose A52s5G. Its SM- model is read automatically."
