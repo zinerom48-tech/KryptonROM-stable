@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GENERAL / SYSTEM / BLOAT
+# GENERAL / SYSTEM / BLOAT (تم تنقيحها وإزالة خدمات الذكاء الاصطناعي و DeX منها تماماً)
 DEBLOAT_APPS=(
 "HMT" "PaymentFramework" "DigitalWellbeing" "FactoryCameraFB"
 "WlanTest" "AirGlance" "AirReadingGlass" "AndroidGlassesCore"
@@ -12,7 +12,7 @@ DEBLOAT_APPS=(
 "MinusOnePage" "MoccaMobile" "Netflix_stub" "Notes40"
 "ParentalCare" "PhotoTable" "SmartReminder" "SmartSwitchStub"
 "UnifiedWFC" "VideoEditorLite_Dream_N"
-"VisionIntelligence3.7" "VoiceAccess" "VTCameraSetting"
+"VoiceAccess" "VTCameraSetting"
 "WebManual" "WifiGuider" "AutomationTest_FB" "FactoryTestProvider"
 "StickerCenter" "CIDManager" "FacAtFunction" "serviceModeApp_FB"
 )
@@ -31,12 +31,10 @@ CARRIER_APPS=(
 "UsimRegistrationKOR" "HpsAgreement_new" "KTAuth_Stub"
 )
 
-# SAMSUNG FEATURES / APPS
+# SAMSUNG APPS (تم الحفاظ على DeX والمكونات الأساسية، وتم إزالة الحزم التالفة فقط)
 SAMSUNG_APPS=(
-"SamsungCalendar" "SamsungTTS" "SamsungBilling"
+"SamsungTTS" "SamsungBilling"
 "OneDrive_Samsung_v3" "SamsungCarKeyFw"
-"SamsungPass" "SamsungSmartSuggestions"
-"SamsungPassAutofill_v1"
 "AppUpdateCenter" "AREmoji"
 "AREmojiEditor" "AutoDoodle" "AvatarEmojiSticker"
 "AvatarEmojiSticker_S" "AvatarPicker"
@@ -44,23 +42,17 @@ SAMSUNG_APPS=(
 "StickerFaceARAvatar" "sticker"
 )
 
-# SAMSUNG AI / SMART
-SAMSUNG_AI=(
-"LiveTranscribe" "Bixby" "BixbyInterpreter"
-"BixbyVisionFramework3.5" "SettingsBixby"
-"SmartEye" "SmartPush" "SmartPush_64"
-"SmartThingsKit" "SmartTouchCall"
-"VisionIntelligence3.7"
-)
+# SAMSUNG AI (تم تفريغ القائمة بالكامل لضمان عمل كافة خدمات Galaxy AI والمساعد الذكي بدون أي أخطاء)
+SAMSUNG_AI=()
 
 # GOOGLE APPS
 GOOGLE_APPS=(
-"SpeechServicesByGoogle" "Maps" "Duo" "Photos"
+"SpeechServicesByGoogle" "Duo" "Photos"
 "AssistantShell" "BardShell" "DuoStub"
 "GoogleCalendarSyncAdapter" "AndroidDeveloperVerifier"
 "YourPhone_Stub" "AndroidAutoStub" "FamilyLinkParentalControls"
-"AndroidSystemIntelligence" "GoogleRestore"
-"SamsungMessages" "SearchSelector" "PlayAutoInstallConfig"
+"GoogleRestore"
+"SearchSelector" "PlayAutoInstallConfig"
 )
 
 # FACEBOOK
@@ -74,7 +66,7 @@ HARDWARE_DRIVERS=(
 "GameDriver-EX2100" "GameDriver-EX2200" "GameDriver-SM8150"
 )
 
-# MISC / SERVICES (تم تنقيح الخدمة وحفظ خدمات DeX & Knox)
+# MISC / SERVICES (تم حماية DeX والخدمات الحساسة بالكامل)
 MISC_SERVICES=(
 "Discover" "DiscoverSEP"
 "EarphoneTypeC" "EasySetup" "FotaAgent"
@@ -93,7 +85,6 @@ MISC_SERVICES=(
 "LiveEffectService" "MyGalaxyService"
 )
 
-# Knox Apps (تم إفراغ القائمة لحماية شبكة المدرسة وشهادات Knox)
 KNOX_APPS=()
 
 REMOVE_FABRIC_CRYPTO() {
@@ -105,7 +96,7 @@ REMOVE_FABRIC_CRYPTO() {
     rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/init/fabric_crypto.rc"
     rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/permissions/FabricCryptoLib.xml"
     rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/vintf/manifest/fabric_crypto_manifest.xml"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/framework/FabricCryptoLib.jar"
+    rm -rf "$EXTRCATED_FIRM_DIR/system/system/framework/FabricCryptoLib.jar"
     rm -rf "$EXTRACTED_FIRM_DIR/system/system/lib64/com.samsung.security.fabric.cryptod-V1-cpp.so"
     rm -rf "$EXTRACTED_FIRM_DIR/system/system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-ndk.so"
     rm -rf "$EXTRACTED_FIRM_DIR/system/system/priv-app/KmxService"
@@ -124,13 +115,15 @@ KICK() {
         "$EXTRACTED_FIRM_DIR/system/system/priv-app"
         "$EXTRACTED_FIRM_DIR/product/app"
         "$EXTRACTED_FIRM_DIR/product/priv-app"
+        "$EXTRACTED_FIRM_DIR/system_ext/app"
+        "$EXTRACTED_FIRM_DIR/system_ext/priv-app"
     )
 
     for app in "${APPS_LIST[@]}"; do
         for dir in "${APP_DIRS[@]}"; do
-            target="$dir/$app"
-            if [[ -d "$target" ]]; then
-                rm -rf "$target"
+            # البحث الدقيق وبالتوافق مع صيغ البناء الحديثة باستخدام الـ Wildcard لمنع حدوث أي Crash لو المجلد غير موجود
+            if [ -d "$dir" ]; then
+                find "$dir" -maxdepth 1 -type d -iname "$app*" -exec rm -rf {} + 2>/dev/null
             fi
         done
     done
@@ -144,7 +137,7 @@ DEBLOAT() {
 
     KICK "$EXTRACTED_FIRM_DIR" "${DEBLOAT_APPS[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${CARRIER_APPS[@]}"
-    KICK "$EXTRACTED_FIRM_DIR" "${SAMSUNG_APPS[@]}"
+    KICK "$EXTRACTED_FAIREM_DIR" "${SAMSUNG_APPS[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${SAMSUNG_AI[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${GOOGLE_APPS[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${FACEBOOK_APPS[@]}"
