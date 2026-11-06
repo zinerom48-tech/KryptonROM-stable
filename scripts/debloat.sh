@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# GENERAL / SYSTEM / BLOAT (تم تنقيحها وإزالة خدمات الذكاء الاصطناعي و DeX منها تماماً)
+# GENERAL / SYSTEM / BLOAT
 DEBLOAT_APPS=(
 "HMT" "PaymentFramework" "DigitalWellbeing" "FactoryCameraFB"
 "WlanTest" "AirGlance" "AirReadingGlass" "AndroidGlassesCore"
@@ -31,7 +31,7 @@ CARRIER_APPS=(
 "UsimRegistrationKOR" "HpsAgreement_new" "KTAuth_Stub"
 )
 
-# SAMSUNG APPS (تم الحفاظ على DeX والمكونات الأساسية، وتم إزالة الحزم التالفة فقط)
+# SAMSUNG APPS
 SAMSUNG_APPS=(
 "SamsungTTS" "SamsungBilling"
 "OneDrive_Samsung_v3" "SamsungCarKeyFw"
@@ -42,7 +42,7 @@ SAMSUNG_APPS=(
 "StickerFaceARAvatar" "sticker"
 )
 
-# SAMSUNG AI (تم تفريغ القائمة بالكامل لضمان عمل كافة خدمات Galaxy AI والمساعد الذكي بدون أي أخطاء)
+# SAMSUNG AI (فارغة للحفاظ على خدمات الذكاء الاصطناعي)
 SAMSUNG_AI=()
 
 # GOOGLE APPS
@@ -66,7 +66,7 @@ HARDWARE_DRIVERS=(
 "GameDriver-EX2100" "GameDriver-EX2200" "GameDriver-SM8150"
 )
 
-# MISC / SERVICES (تم حماية DeX والخدمات الحساسة بالكامل)
+# MISC / SERVICES
 MISC_SERVICES=(
 "Discover" "DiscoverSEP"
 "EarphoneTypeC" "EasySetup" "FotaAgent"
@@ -88,24 +88,23 @@ MISC_SERVICES=(
 KNOX_APPS=()
 
 REMOVE_FABRIC_CRYPTO() {
-    if [ "$#" -ne 1 ]; then
-        return 1
-    fi
-	local EXTRACTED_FIRM_DIR="$1"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/bin/fabric_crypto"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/init/fabric_crypto.rc"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/permissions/FabricCryptoLib.xml"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/vintf/manifest/fabric_crypto_manifest.xml"
-    rm -rf "$EXTRCATED_FIRM_DIR/system/system/framework/FabricCryptoLib.jar"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/lib64/com.samsung.security.fabric.cryptod-V1-cpp.so"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-ndk.so"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/priv-app/KmxService"
+    [ "$#" -ne 1 ] && return 0
+    local EXTRACTED_FIRM_DIR="$1"
+    
+    # استخدام التوجيه الآمن وعدم إيقاف السكربت لو الملف غير موجود
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/bin/fabric_crypto" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/init/fabric_crypto.rc" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/permissions/FabricCryptoLib.xml" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/vintf/manifest/fabric_crypto_manifest.xml" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/framework/FabricCryptoLib.jar" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/lib64/com.samsung.security.fabric.cryptod-V1-cpp.so" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/lib64/vendor.samsung.hardware.security.fkeymaster-V1-ndk.so" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/priv-app/KmxService" 2>/dev/null
+    return 0
 }
 
 KICK() {
-    if [ "$#" -lt 2 ]; then
-        return 1
-    fi
+    [ "$#" -lt 2 ] && return 0
     local EXTRACTED_FIRM_DIR="$1"
     shift
     local APPS_LIST=("$@")
@@ -121,23 +120,23 @@ KICK() {
 
     for app in "${APPS_LIST[@]}"; do
         for dir in "${APP_DIRS[@]}"; do
-            # البحث الدقيق وبالتوافق مع صيغ البناء الحديثة باستخدام الـ Wildcard لمنع حدوث أي Crash لو المجلد غير موجود
             if [ -d "$dir" ]; then
                 find "$dir" -maxdepth 1 -type d -iname "$app*" -exec rm -rf {} + 2>/dev/null
             fi
         done
     done
+    return 0
 }
 
 DEBLOAT() {
 	local EXTRACTED_FIRM_DIR="$1"
 	if [ ! -d "$EXTRACTED_FIRM_DIR/system" ]; then
-        return 1
+        return 0
     fi
 
     KICK "$EXTRACTED_FIRM_DIR" "${DEBLOAT_APPS[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${CARRIER_APPS[@]}"
-    KICK "$EXTRACTED_FAIREM_DIR" "${SAMSUNG_APPS[@]}"
+    KICK "$EXTRACTED_FIRM_DIR" "${SAMSUNG_APPS[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${SAMSUNG_AI[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${GOOGLE_APPS[@]}"
     KICK "$EXTRACTED_FIRM_DIR" "${FACEBOOK_APPS[@]}"
@@ -145,11 +144,13 @@ DEBLOAT() {
     KICK "$EXTRACTED_FIRM_DIR" "${MISC_SERVICES[@]}"
 	REMOVE_FABRIC_CRYPTO "$EXTRACTED_FIRM_DIR"
 
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/app"/SamsungTTS*
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/hidden"
-    rm -rf "$EXTRACTED_FIRM_DIR/system/system/preload"
-	rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/mediasearch"
-	rm -rf "$EXTRACTED_FIRM_DIR/system/system/priv-app/MediaSearch"
-	rm -rf "$EXTRACTED_FIRM_DIR/system/system/skt"
-	rm -rf "$EXTRACTED_FIRM_DIR/system/system/tts"
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/app"/SamsungTTS* 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/hidden" 2>/dev/null
+    rm -rf "$EXTRACTED_FIRM_DIR/system/system/preload" 2>/dev/null
+	rm -rf "$EXTRACTED_FIRM_DIR/system/system/etc/mediasearch" 2>/dev/null
+	rm -rf "$EXTRACTED_FIRM_DIR/system/system/priv-app/MediaSearch" 2>/dev/null
+	rm -rf "$EXTRACTED_FIRM_DIR/system/system/skt" 2>/dev/null
+	rm -rf "$EXTRACTED_FIRM_DIR/system/system/tts" 2>/dev/null
+    
+    return 0
 }
