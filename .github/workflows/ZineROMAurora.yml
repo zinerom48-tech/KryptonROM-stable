@@ -21,9 +21,75 @@ on:
         default: "3.2.4"
 
       STOCK_DEVICE:
-        description: "Profile of the phone receiving the port; for Galaxy A52s 5G choose A52s5G. Its SM- model is read automatically."
+        description: "Select a QuantumROM stock-device profile (A52s5G and SM-X216B are kept from this repo)."
         required: true
-        type: string
+        type: choice
+        options:
+          - SM-A055F
+          - SM-A057F
+          - SM-A065F
+          - SM-A066B
+          - SM-A127F
+          - SM-A135F
+          - SM-A135F_8.5
+          - SM-A137F
+          - SM-A146M
+          - SM-A155F
+          - SM-A156E
+          - SM-A165F
+          - SM-A175F
+          - SM-A176B
+          - SM-A225F
+          - SM-A225M
+          - SM-A226B
+          - SM-A235F
+          - SM-A236E
+          - SM-A245F
+          - SM-A256E
+          - SM-A266B
+          - SM-A315F
+          - SM-A325F
+          - SM-A336E
+          - SM-A346E
+          - SM-A356E
+          - SM-A366B
+          - SM-A415F
+          - SM-A426B
+          - SM-A515F
+          - SM-A525F
+          - SM-A536B
+          - SM-A546E
+          - SM-A556E
+          - SM-A715F
+          - SM-A725F
+          - SM-A736B
+          - SM-E225F
+          - SM-E346B
+          - SM-G780F
+          - SM-G780G
+          - SM-G781B
+          - SM-G990E
+          - SM-M136B
+          - SM-M146B
+          - SM-M156B
+          - SM-M166P
+          - SM-M176B
+          - SM-M215G
+          - SM-M225F
+          - SM-M325F
+          - SM-M346B
+          - SM-M356B
+          - SM-M366B
+          - SM-M556B
+          - SM-M558B
+          - SM-M566B
+          - SM-P613
+          - SM-S901B
+          - SM-S901E
+          - SM-S911B
+          - None
+          - A52s5G
+          - SM-X216B
         default: "A52s5G"
 
       USE_UI_8_TETHERING_APEX:
@@ -218,6 +284,18 @@ jobs:
         run: |
           source "$(pwd)/scripts/QuantumRom.sh"
           EXTRACT_FIRMWARE "$FIRM_DIR/$TARGET_DEVICE"
+
+      - name: Install ZineROM Info system app
+        run: |
+          set -euo pipefail
+          APP_SRC="$(pwd)/QuantumROM/Mods/Apps/ZineROM-Info/system/system/app/ZineROM-Info/ZineROM-Info.apk"
+          APP_DST="$FIRM_DIR/$TARGET_DEVICE/system/system/app/ZineROM-Info/ZineROM-Info.apk"
+          test -s "$APP_SRC"
+          mkdir -p "$(dirname "$APP_DST")"
+          cp -f "$APP_SRC" "$APP_DST"
+          chmod 0644 "$APP_DST"
+          sha256sum "$APP_SRC" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "Installed ZineROM Info (com.zinerom.info) into /system/app/ZineROM-Info."
 
       - name: Extract super.img
         run: |
