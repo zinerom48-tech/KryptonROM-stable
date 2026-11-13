@@ -227,9 +227,11 @@ jobs:
           source "$(pwd)/scripts/git_utils.sh"
 
           if [ "${{ inputs.STOCK_DEVICE }}" != "None" ]; then
-              if [ -d "$LOCAL_DEV_DIR" ] && [ -f "$LOCAL_DEV_DIR/config" ]; then
-                  echo "✅ Found device '${{ inputs.STOCK_DEVICE }}' in local repository!"
+              if [ -d "$LOCAL_DEV_DIR" ] && [ -f "$LOCAL_DEV_DIR/config" ] && [ -f "$LOCAL_DEV_DIR/floating_feature.xml" ] && [ -d "$LOCAL_DEV_DIR/Stock" ]; then
+                  echo "✅ Found complete device '${{ inputs.STOCK_DEVICE }}' in local repository!"
               else
+                  # Metadata-only imported profiles are completed from the owned QuantumROM source.
+                  rm -rf "$LOCAL_DEV_DIR"
                   echo "⚠️ Device '${{ inputs.STOCK_DEVICE }}' not found locally. Checking remote source repository ($REPO)..."
                   
                   if ! curl -fsSL -H "Accept: application/vnd.github+json" \
